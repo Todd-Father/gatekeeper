@@ -1,0 +1,66 @@
+# Gitleaks configuration — CTRL-SECRET.
+#
+# Extends the default ruleset (AWS, Anthropic, Stripe, OpenAI, GitHub, etc.).
+# Layer per-repo tuning on top:
+#   - Paths ignored: build output, node_modules, coverage, vendored assets.
+#   - Known-safe content allowlisted with an explicit "why" so a future
+#     contributor can audit whether the waiver is still valid.
+#
+# Scan from the repo root: `gitleaks git` (history) or `gitleaks dir`
+# (working tree). The pre-commit hook runs `gitleaks protect --staged`.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist: paths, files, and specific false positives"
+
+# --- Paths ----------------------------------------------------------------
+paths = [
+  '''^\.next/''',
+  '''^\.vercel/''',
+  '''^node_modules/''',
+  '''^\.git/''',
+  '''^coverage/''',
+  '''^dist/''',
+  '''^out/''',
+  '''^build/''',
+  # Lockfile — high-entropy strings here are hashes, not secrets.
+  '''^package-lock\.json$''',
+  '''tsconfig\.tsbuildinfo$''',
+  # Local env files are gitignored and contain dev secrets by design. The
+  # pre-commit hook scans only STAGED changes so these are never seen at commit
+  # time; this silences manual `gitleaks dir` runs. Allowlisting here does NOT
+  # weaken protection: .gitignore keeps them out of git, and if someone
+  # `git add -f`s one, the staged-diff hook still refuses it.
+  # NOTE: .env.example is intentionally NOT allowlisted — it's committed and
+  # must never hold real secrets (stopwords below catch the placeholders).
+  '''^\.env\.local$''',
+  '''^\.env\.local\..+$''',
+  '''^\.env\.development\.local$''',
+  '''^\.env\.production\.local$''',
+  '''^\.env\.test\.local$''',
+]
+
+# --- Commits --------------------------------------------------------------
+# Historical commits reviewed and whose findings are neutralized (secret
+# rotated / token expired). Allowlist by EXACT commit hash — the narrowest
+# possible waiver. This does NOT weaken the gate: any NEW secret in any OTHER
+# commit still fails. NEVER lower the scan scope to make the pipeline green.
+#
+# Example (replace with your own, or delete):
+#   commits = [
+#     # GH #NNN: commit abc1234 dumped a now-ROTATED cache credential + an
+#     # already-EXPIRED OIDC token. File removed + gitignored. Allowlist this
+#     # one dead blob so it doesn't fail every future `main` scan.
+#     "abc1234567890abcdef1234567890abcdef123456",
+#   ]
+commits = []
+
+# --- Stopwords ------------------------------------------------------------
+# Literal strings that look like secrets but aren't. Add sparingly, document why.
+stopwords = [
+  "your-secret-here",
+  "replace-with-your-key",
+  "sk-ant-your-key-here",
+]

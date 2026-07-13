@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Gatekeeper pre-commit hook — CTRL-SECRET local layer.
+#
+# Fast, best-effort scan of the STAGED diff only. CI is the authoritative
+# backstop (see ci-templates/secret-scan.yml). Install by symlinking into
+# .git/hooks so edits stay version-controlled:
+#
+#   ln -sf ../../ci-templates/pre-commit .git/hooks/pre-commit
+#
+# If gitleaks isn't installed, the hook skips with a warning rather than
+# blocking the commit — CI will still catch anything missed.
+
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks not found — skipping local secret scan (CI is the backstop)."
+  echo "Install: brew install gitleaks"
+  exit 0
+fi
+
+gitleaks protect --staged --redact --config .gitleaks.toml

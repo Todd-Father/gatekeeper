@@ -1,0 +1,44 @@
+# Dependabot configuration — CTRL-SUPPLY companion.
+#
+# Weekly dependency updates, grouped by ecosystem to keep review noise low.
+# Agent-assisted dev means deps land fast; this is the weekly check that a CVE
+# hasn't ridden along quietly. Place at .github/dependabot.yml.
+#
+# Docs: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "supply-chain"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      # Group tightly-coupled ecosystems so they move together and majors get
+      # reviewed deliberately. Adapt the patterns to your stack.
+      framework:
+        patterns: ["next", "@next/*", "eslint-config-next"]
+        update-types: ["minor", "patch"]
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+        update-types: ["minor", "patch"]
+      dev-tooling:
+        dependency-type: "development"
+        patterns: ["typescript", "eslint", "@types/node"]
+        update-types: ["minor", "patch"]
+    # Major bumps always get their own PR — forces deliberate review.
+
+  # The Actions themselves have supply-chain reach. Keep them current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3

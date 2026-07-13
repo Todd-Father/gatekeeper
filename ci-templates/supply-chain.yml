@@ -1,0 +1,39 @@
+# Gatekeeper CI template — CTRL-SUPPLY lockfile integrity + audit gate.
+#
+# Drop these steps into your test job. They give you three things for free:
+#   1. Lockfile integrity — `npm ci` fails if package-lock.json is missing or
+#      out of sync with package.json. Every dep change is visible in review.
+#   2. No install-time code execution — `--ignore-scripts` blocks malicious
+#      pre/post-install hooks, a common supply-chain vector.
+#   3. A real CVE gate on production dependencies.
+
+name: supply-chain
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  supply-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Lockfile integrity + block post-install scripts. If a dep legitimately
+      # needs scripts, document the exception here with a reason — default off.
+      - name: lockfile-integrity
+        run: npm ci --ignore-scripts
+
+      # Fail on any high/critical CVE in a production dep. Dev-only vulns are
+      # tracked separately and don't block merges.
+      #
+      # NEVER `|| true` this. A one-time waiver for a false positive silently
+      # disables the gate forever once the advisory clears. To waive a specific
+      # advisory, allowlist that GHSA id in a pre-step with an expiry note.
+      - name: npm audit (production deps, high+)
+        run: npm audit --omit=dev --audit-level=high
