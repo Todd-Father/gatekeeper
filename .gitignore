@@ -1,3 +1,13 @@
 node_modules/
 .DS_Store
 *.log
+
+# Secrets — this is a PUBLIC repo. Never commit credentials.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*secret*
+*credential*
