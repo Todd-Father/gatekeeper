@@ -3,6 +3,7 @@
 **What it is:** A reusable **security methodology** for shipping AI-built software without shipping AI-built vulnerabilities — a fixed set of controls, CI templates that wire them in as a hard gate, and a "defensibility interview" you must pass before money or identity touches an app. Extracted from a real production Next.js codebase (thirty-aye) that went through this exact gate before its first Stripe PR.
 **Repo:** `Todd-Father/gatekeeper` (**public**)
 **Canonical path:** `~/Projects/gatekeeper` (see ~/.claude/harness/canonical-paths.json)
+**Tools wired:** GitHub (`gh` CLI) only. No build, deploy, or database — it's a Markdown methodology repo. ("Stripe" appears in the docs as the *example* domain, not a wired integration.)
 
 > **This is a docs/methodology repo, not an application.** No build, no test suite, no dev server. The "product" is the controls, templates, and interview — Markdown and reference code meant to be copied into *other* projects.
 
