@@ -1,0 +1,28 @@
+{
+  "_comment": "Starter project settings. The hooks are the auto-safety-net from thirty-aye. Adjust the typecheck command per stack (see below). settings.json is team-shared/committed; settings.local.json is gitignored.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Auto-typecheck after editing source. TS shown; for Python swap to: ruff check / mypy on *.py.",
+            "command": "FILE=\"${CLAUDE_FILE_PATH:-}\"; if [[ \"$FILE\" == *.ts || \"$FILE\" == *.tsx ]]; then cd \"$CLAUDE_PROJECT_DIR\" && npx tsc --noEmit 2>&1 | head -30; fi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "comment": "Secret-scan staged changes before you walk away. No-op if gitleaks not installed.",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && gitleaks protect --staged 2>&1 | tail -5 || true"
+          }
+        ]
+      }
+    ]
+  }
+}
