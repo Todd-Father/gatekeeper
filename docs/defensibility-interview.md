@@ -30,6 +30,13 @@ reaches a render path or a privileged action.
 → Row-level security is the authority, enforced at the database, not the app layer. It's
 proven by committed attack scripts that run in CI — not asserted.
 
+**A user changes the id in `/report/{id}` to one they don't own — what stops them? And what
+stops a `/purchase` from granting access before payment clears?**
+→ Server-side ownership/entitlement check on every object access, deny-by-default,
+centralized so no route can forget it — the object id is an input, never proof of ownership.
+Proven by committed attack scripts (cross-user read, entitlement bypass, id enumeration) that
+assert 403 and run in CI. See [CTRL-ACCESS](../controls/CTRL-ACCESS.md).
+
 **A secret leaks into a diff. How long until it's rotated, and how do you know?**
 → Under one hour, per a runbook that has been rehearsed and timed. Two scan layers
 (pre-commit + CI) make the leak visible; the drill makes the rotation fast.

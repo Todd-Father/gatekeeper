@@ -53,6 +53,7 @@ Each control is a self-contained file in [`controls/`](controls/) with the same 
 | [`CTRL-SECRET`](controls/CTRL-SECRET.md) | Two-layer secret scanning + rehearsed rotation | Secrets |
 | [`CTRL-SUPPLY`](controls/CTRL-SUPPLY.md) | Lockfile integrity + no post-install scripts | Secrets |
 | [`CTRL-TENANT`](controls/CTRL-TENANT.md) | Tenant isolation proven by attack, not assertion | Authority |
+| [`CTRL-ACCESS`](controls/CTRL-ACCESS.md) | Authorize every object access by the caller (kills IDOR + flow bypass) | Authority |
 | [`CTRL-LLM`](controls/CTRL-LLM.md) | Treat model output as hostile input | Boundary |
 | [`CTRL-OBSERV`](controls/CTRL-OBSERV.md) | Every control emits a signal you can see | Observability |
 
